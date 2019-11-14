@@ -7,12 +7,16 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from Mydemo import *
 class SonFig(QWidget):
-    def __init__(self, type, statusBar, datalist, parent=None):
+    def __init__(self, funtype, statusBar,progressBar, datalist,selectfilename,figuremain,figureinf, parent=None):
         super(SonFig, self).__init__(parent)
-        self.type=type
+        self.figuremain=figuremain
+        self.figureinf=figureinf
+        self.selectfilename=selectfilename
+        self.progressBar=progressBar
+        self.funtype=funtype
         self.setFont(QFont("Microsoft YaHei",10.5))
         self.statusBar=statusBar
-        self.datalist=[]
+        self.datalist=datalist
         self.currentedit=0
         # 添加公共控件
         self.grid = QGridLayout()
@@ -29,16 +33,16 @@ class SonFig(QWidget):
         self.grid.addWidget(self.LineColorButton, 1, 1, 1, 1)
 
         # 添加私有控件
-        if (self.type == 5 or self.type == 6):
+        if (self.funtype == "指数积分形式拟合" or self.funtype == "双曲线积分形式拟合"):
             # bar颜色按钮
             self.BarColorButton = QPushButton("BarColor")
             self.BarColorButton.clicked.connect(lambda: self.SpotColor())
             self.grid.addWidget(self.BarColorButton, 1, 2, 1, 1)
 
             # 线宽度标签
-            self.LineWidthLebal = QLabel("LineWidth")
-            self.LineWidthLebal.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            self.grid.addWidget(self.LineWidthLebal, 1, 3, 1, 1)
+            self.LineWidthlabel = QLabel("LineWidth")
+            self.LineWidthlabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.grid.addWidget(self.LineWidthlabel, 1, 3, 1, 1)
 
             # 线列表
             self.LineWidthComboBox = QComboBox()
@@ -65,16 +69,16 @@ class SonFig(QWidget):
             self.BarAlphaComboBox.currentIndexChanged.connect(lambda: self.SpotAlpha())
             self.grid.addWidget(self.BarAlphaComboBox, 1, 6, 1, 1)
 
-        elif (self.type == 2 or self.type == 4):
+        elif (self.funtype == "指数拟合" or self.funtype =="双曲线拟合"):
             # 点颜色
             self.spotColorButton = QPushButton("SpotColor")
             self.spotColorButton.clicked.connect(lambda: self.SpotColor())
             self.grid.addWidget(self.spotColorButton, 1, 2, 1, 1)
 
             # 线宽度标签
-            self.LineWidthLebal = QLabel("LineWidth")
-            self.LineWidthLebal.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            self.grid.addWidget(self.LineWidthLebal, 1, 3, 1, 1)
+            self.LineWidthlabel = QLabel("LineWidth")
+            self.LineWidthlabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.grid.addWidget(self.LineWidthlabel, 1, 3, 1, 1)
 
             # 线下拉框
             self.LineWidthComboBox = QComboBox()
@@ -107,9 +111,9 @@ class SonFig(QWidget):
             # 添加公共控件
 
             # 添加标题标签
-        self.titleLebal = QLabel("TitleText")
-        self.titleLebal.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.grid.addWidget(self.titleLebal, 1, 7, 1, 1)
+        self.titlelabel = QLabel("TitleText")
+        self.titlelabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.grid.addWidget(self.titlelabel, 1, 7, 1, 1)
 
         # 添加标题输入框
         self.titleLineEdit = QLineEdit(self)
@@ -155,50 +159,47 @@ class SonFig(QWidget):
     def plot(self):
         self.figure.fig.canvas.draw_idle()
         self.figure.axes.clear()
-        for fig in self.datalist:
-            if (fig.type == 4):  # 双曲线画图
-                print("self.spotwidth", self.spotwidth)
-                if (self.title == "null"):
-                    self.title = '双曲线拟合(${I}$ = ${I_0}$*(1+${t}$/${\\tau}$)${^{-\gamma}}$+D)'
-                print("okkkkk", self.spotwidth)
-                self.figure.axes.scatter(self.xdata, self.ydata, s=self.spotwidth, c=self.spotcolor, alpha=0.4,
-                                         label=self.filename + "原始数据")
-                self.figure.axes.plot(self.xfit, self.yfit, linewidth=self.linewidth, color=self.linecolor,
-                                      label=self.filename + "双曲线拟合数据")
+        if (self.funtype == "双曲线拟合" or self.funtype == "指数拟合"):  # 双曲线画图
+            for filename in self.selectfilename:
+                file = self.datalist[filename].plotinf[self.funtype]
+                xdata = file.xdata
+                ydata = file.ydata
+                xfit = file.xfit
+                yfit = file.yfit
+                spotwidth = file.spotwidth
+                spotcolor = file.spotcolor
+                linewidth = file.linewidth
+                linecolor = file.linecolor
+                spotalpha = file.spotalpha
+                orlabel = file.orlabel
+                fitlabel = file.fitlabel
 
-
-            elif (self.type == 2):  # 指数画图
-                if (self.title == "null"):
-                    self.title = '指数拟合(${I}$ = ${I_0}$e${^{-t/\\tau}}$+D)'
-                self.figure.axes.scatter(self.xdata, self.ydata, s=self.spotwidth, c=self.spotcolor, alpha=0.4,
-                                         label=self.filename + "原始数据")
-                self.figure.axes.plot(self.xfit, self.yfit, linewidth=self.linewidth, color=self.linecolor,
-                                      label=self.filename + "指数拟合数据")
-
-
-            elif (self.type == 6):  # 双曲线积分画图
-                if (self.title == "null"):
-                    self.title = '双曲线积分拟合(${I}$ =$\int_t^{t+ \Delta t}$(${I_0}$*(1+${t}$/${\\tau}$)${^{-\gamma}}$+D)dt)'
-                # print(self.spotalpha)
-                self.figure.axes.bar(self.xdata, self.ydata, width=self.dt, alpha=self.spotalpha, color=self.spotcolor,
-                                     label=self.filename + "原始数据")
-                self.figure.axes.plot(self.xfit, self.yfit, linewidth=self.linewidth, color=self.linecolor,
-                                      label=self.filename + "双曲线积分拟合数据")
-
-
-            elif (self.type == 5):  # 指数积分画图
-                # print(self.spotalpha)
-                if (self.title == "null"):
-                    self.title = '指数积分拟合(${I}$ =$\int_t^{t+ \Delta t}$(${I_0}$e${^{-t/\\tau}}$+D)dt)'
-                self.figure.axes.bar(self.xdata, self.ydata, width=self.dt, alpha=self.spotalpha, color=self.spotcolor,
-                                     label=self.filename + "原始数据")
-                self.figure.axes.plot(self.xfit, self.yfit, linewidth=self.linewidth, color=self.linecolor,
-                                      label=self.filename + "指数积分拟合数据")
-
-
-        self.figure.axes.set_ylabel('cps')
-        self.figure.axes.set_xlabel('t')
-        self.figure.axes.set_title(self.title, color='black')
+                self.figure.axes.scatter(xdata, ydata, spotwidth, spotcolor, alpha=spotalpha,
+                                         label=orlabel)
+                self.figure.axes.plot(xfit, yfit, linewidth=linewidth, color=linecolor,
+                                      label=fitlabel)
+        elif (self.funtype == "双曲线积分拟合" or self.funtype == "指数积分拟合"):  # 双曲线画图
+            for filename in self.selectfilename:
+                file = self.datalist[filename].plotinf[self.funtype]
+                xdata = file.xdata
+                ydata = file.ydata
+                xfit = file.xfit
+                yfit = file.yfit
+                spotwidth = file.spotwidth
+                spotcolor = file.spotcolor
+                linewidth = file.linewidth
+                linecolor = file.linecolor
+                spotalpha = file.spotalpha
+                orlabel = file.orlabel
+                fitlabel = file.fitlabel
+                dt = self.datalist[filename].dt
+                self.figure.axes.barbar(xdata, ydata, width=dt,color=spotcolor, alpha=spotalpha,
+                                         label=orlabel)
+                self.figure.axes.plot(xfit, yfit, markersize=linewidth, color=linecolor,
+                                      label=fitlabel)
+        self.figure.axes.set_ylabel(self.figureson[self.funtype].ylabel)
+        self.figure.axes.set_xlabel(self.figureson[self.funtype].xlabel)
+        self.figure.axes.set_title(self.figureson[self.funtype].title, self.figureson[self.funtype].titlecolor)
 
     def SetPara(self,datalist):
         self.datalist=datalist
