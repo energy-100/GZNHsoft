@@ -1,5 +1,5 @@
 from MainUI import*
-from SonFig import*
+from SonFig import SonFigspot,SonFigbar
 from Mydemo import*
 import DataClass
 import sys
@@ -22,11 +22,16 @@ class main(QMainWindow):
         self.singleplot=0
         self.singlefilename=""
         self.selectfilename = []        #文件选择列表
+        self.select=dict()      #子图列表
+        self.select["双曲线拟合"]=QComboBox()
+        self.select["指数拟合"]=QComboBox()
+        self.select["双曲线积分形式拟合"]=QComboBox()
+        self.select["指数积分形式拟合"]=QComboBox()
         self.progressBar = QProgressBar()
         self.statusBar().addPermanentWidget(self.progressBar)
         self.progressBar.setVisible(False)
         self.tabWidget = QTabWidget()
-        self.setFont(QFont("Microsoft YaHei", 10.5))
+        self.setFont(QFont("Microsoft YaHei", 12))
         self.setWindowTitle('人体延迟发光数据画图软件 V2.0')
         self.setWindowIcon(QIcon('xyjk.png'))
         self.openfile_path = ""
@@ -48,14 +53,14 @@ class main(QMainWindow):
         #子图 Figure&Tab
         self.datalist=dict()
         self.figureson=dict()
-        self.figureson["双曲线拟合"] = SonFig("双曲线拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["双曲线拟合"])
-        self.figureson["指数拟合"] = SonFig("指数拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["指数拟合"])
-        self.figureson["双曲线积分形式拟合"] = SonFig("双曲线积分形式拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["双曲线积分形式拟合"])
-        self.figureson["指数积分形式拟合"] = SonFig("指数积分形式拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["指数积分形式拟合"])
+        self.figureson["双曲线拟合"] = SonFigspot("双曲线拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["双曲线拟合"],self.select["双曲线拟合"])
+        self.figureson["指数拟合"] = SonFigspot("指数拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["指数拟合"],self.select["指数拟合"])
+        self.figureson["双曲线积分形式拟合"] = SonFigbar("双曲线积分形式拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["双曲线积分形式拟合"],self.select["双曲线积分形式拟合"])
+        self.figureson["指数积分形式拟合"] = SonFigbar("指数积分形式拟合",self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureinf["指数积分形式拟合"],self.select["指数积分形式拟合"])
 
 
         #主图tab
-        self.tab1=MainUI(self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureson,self.figureinf)
+        self.tab1=MainUI(self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureson,self.figureinf,self.select)
         # self.tab2=SonFig(4,self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureson)
         # self.tab3=SonFig(2,self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureson)
         # self.tab4=SonFig(6,self.statusBar,self.progressBar,self.datalist,self.selectfilename,self.figuremain,self.figureson)

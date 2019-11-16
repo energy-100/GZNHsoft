@@ -4,10 +4,12 @@ from DataClass import *
 from PyQt5.QtWidgets import *
 import os
 from PyQt5 import QtCore
+from SonFig import SonFigspot,SonFigbar
 class MainUI(QWidget):
-    def __init__(self,statusBar,progressBar,datalist,selectfilename,figuremain,figureson,figureinf,parent=None):
+    def __init__(self,statusBar,progressBar,datalist,selectfilename,figuremain,figureson,figureinf,selectfileComboBox,parent=None):
         super(MainUI, self).__init__(parent)
-        self.colorlist=["b","r","g","black","yellow"]
+        self.selectfileComboBox=selectfileComboBox
+        self.colorlist=["blue","red","green","black","yellow"]
         self.singleplot=1
         self.datatype=3
         self.singlefilename=""
@@ -63,7 +65,8 @@ class MainUI(QWidget):
 
         self.listwidget3 = QTableWidget(0,0)
         self.listwidget3.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.listwidget3.customContextMenuRequested.connect(self.generateMenu3)
+        self.listwidget3.customContextMenuRequested.connect(lambda:self.generateMenu3)
+        # self.listwidget3.customContextMenuRequested.connect(lambda:self.generateMenu3)
         self.listwidget3.setAlternatingRowColors(True)
         self.listwidget3.setHorizontalHeaderLabels(['文件名称', '双曲线参数序号', '指数参数序号', '双曲线积分参数序号', '指数积分参数序号'])
         # self.listwidget3.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -79,7 +82,8 @@ class MainUI(QWidget):
         self.grid2.addWidget(self.label_4, 0, 10, 1, 10)
 
         self.tableWidget = QTableWidget(0,5)
-        self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tableWidget.itemChanged.connect(lambda:self.changetableWidget())
+        # self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.tableWidget.customContextMenuRequested.connect(self.generateMenu4)
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setHorizontalHeaderLabels(['文件名称', '双曲线', '指数','双曲线积分', '指数积分'])
@@ -89,7 +93,7 @@ class MainUI(QWidget):
         # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # self.tableWidget.horizontalHeader().setStretchLastSection(True)
-        self.grid2.addWidget(self.tableWidget, 6, 5, 3, 15)
+        self.grid2.addWidget(self.tableWidget, 5, 5, 4, 15)
 
 
 
@@ -252,17 +256,25 @@ class MainUI(QWidget):
 
 
         find = self.tableWidget.findItems(filename, QtCore.Qt.MatchExactly)
+        if (self.singleplot == 1):
+            self.selectfilename.clear()
+            self.selectfilename.append(item)
         if(self.singleplot==0):
             if item not in self.selectfilename:
                 self.selectfilename.append(item)
             if (not find):
+                # self.selectfileComboBox.addItem(item)
                 self.tableWidget.insertRow(self.tableWidget.rowCount())
                 row=self.datalist.get(item).select()
-                for i in range(len(row)):
-                    self.tableWidget.setItem(self.tableWidget.rowCount()-1,i,QTableWidgetItem(row[i]))
-                    if(str.isdigit(row[i])):
-                        if(int(row[i])!=1):
-                            self.tableWidget.item(self.tableWidget.rowCount()-1, i).setBackground(QBrush(QColor(240, 125, 80)))
+                try:
+                    for i in range(len(row)):
+                        self.tableWidget.setItem(self.tableWidget.rowCount()-1,i,QTableWidgetItem(row[i]))
+                        if(str.isdigit(row[i])):
+                            if(int(row[i])!=1):
+                                self.tableWidget.item(self.tableWidget.rowCount()-1, i).setBackground(QBrush(QColor(240, 125, 80)))
+                except Exception as a:
+                    print("20196:")
+                    print(a)
         self.listwidget2.clear()
         if(self.datalist[item].plotinf["双曲线拟合"].fun==1):
             self.listwidget2.addItem("双曲线拟合")
@@ -352,6 +364,7 @@ class MainUI(QWidget):
                 self.plot(fittype)
                 print("多文件 存在",self.selectfilename)
             else:  #不存在
+                # self.selectfilename.append(filename)
                 self.tableWidget.insertRow(self.tableWidget.rowCount()) #增加table行
                 self.tableWidget.setItem(self.tableWidget.rowCount()-1,0,QTableWidgetItem(str(filename)))   #加入新行的0列
 
@@ -404,6 +417,9 @@ class MainUI(QWidget):
             self.datalist[filename].calculatefit(fittype)
             self.plotall()
         else:
+            # self.selectfileComboBox.clear()
+            # self.selectfileComboBox.addItem(filename)
+
             self.datalist[filename].calculatefit(fittype)
             self.plot(fittype)
 
@@ -547,6 +563,7 @@ class MainUI(QWidget):
             self.statusBar().showMessage("已进入单文件分析模式")
         else:
             self.singleplot = 0
+            self.selectfilename.clear()
             self.statusBar().showMessage("正在清空画板")
             i=1
             for key in self.figure:
@@ -580,6 +597,69 @@ class MainUI(QWidget):
         elif(self.datatypeComboBox.currentText()=="只显示拟合数据"):
             self.statusBar().showMessage("图片已更新为：只显示拟合数据")
 
+    def changetableWidget(self):
+        fittype=QListWidgetItem(self.listwidget2.currentItem()).text()
+        filename=QListWidgetItem(self.listwidget1.currentItem()).text()
+        rowlabel=str(self.listwidget3.currentIndex().row()+1)
+        collabel=str(self.listwidget3.horizontalHeaderItem(self.listwidget3.currentIndex().column()))
+        try:
+            self.selectfileComboBox["双曲线拟合"].clear()
+            self.selectfileComboBox["双曲线积分形式拟合"].clear()
+            self.selectfileComboBox["指数拟合"].clear()
+            self.selectfileComboBox["指数积分形式拟合"].clear()
+        except Exception as a:
+            print("clear:")
+            print(a)
+        for row in range(self.tableWidget.rowCount()):
+            # try:
+
+            print(self.tableWidget.item(row, 0).text())
+            if(self.datalist[self.tableWidget.item(row,0).text()].plotinf["双曲线拟合"].fun==1):
+                try:
+                    print(self.selectfileComboBox["双曲线拟合"].count())
+                    # self.selectfileComboBox["双曲线拟合"].addItem("vdsvsdvdsvsdvcs")
+                    print(self.tableWidget.item(row,0).text())
+                    self.selectfileComboBox["双曲线拟合"].addItem(self.tableWidget.item(row,0).text())
+                except Exception as a:
+                    print("ad:")
+                    print(a)
+            if(self.datalist[self.tableWidget.item(row,0).text()].plotinf["指数拟合"].fun==1):
+                # self.selectfileComboBox["指数拟合"].addItem("vdsvsdvdsvsdvcs")
+                try:
+                    self.selectfileComboBox["指数拟合"].addItem(self.tableWidget.item(row,0).text())
+                except Exception as a:
+                    print("ad:")
+                    print(a)
+            if(self.datalist[self.tableWidget.item(row,0).text()].plotinf["双曲线积分形式拟合"].fun==1):
+                self.selectfileComboBox["双曲线积分形式拟合"].addItem(self.tableWidget.item(row,0).text())
+            if(self.datalist[self.tableWidget.item(row,0).text()].plotinf["指数积分形式拟合"].fun==1) :
+                self.selectfileComboBox["指数积分形式拟合"].addItem(self.tableWidget.item(row,0).text())
+
+
+
+
+
+
+
+
+
+                # if((self.tableWidget.item(row,1))and(self.tableWidget.item(row,1).text()!="-") ):
+                # # if(self.tableWidget.item(row,1).text()!="-"):
+                #     self.selectfileComboBox["双曲线拟合"].addItem(self.tableWidget.item(row,0).text())
+                # if((self.tableWidget.item(row,1))and( self.tableWidget.item(row,2).text()!="-") ):
+                # # if(self.tableWidget.item(row,2).text()!="-"):
+                #     self.selectfileComboBox["指数拟合"].addItem(self.tableWidget.item(row,0).text())
+                # if((self.tableWidget.item(row,1) )and( self.tableWidget.item(row,3).text()!="-") ):
+                # # if(self.tableWidget.item(row,3).text()!="-"):
+                #     self.selectfileComboBox["双曲线积分形式拟合"].addItem(self.tableWidget.item(row,0).text())
+                # if((self.tableWidget.item(row,1) )and( self.tableWidget.item(row,4).text()!="-")) :
+                # # if(self.tableWidget.item(row,4).text()!="-"):
+                #     self.selectfileComboBox["指数积分形式拟合"].addItem(self.tableWidget.item(row,0).text())
+            # except Exception as a:
+            #     print("ad:")
+            #     print(a)
+
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
     def clearfile(self):
         self.tableWidget.clearContents()
@@ -675,11 +755,14 @@ class MainUI(QWidget):
                     spotwidth = plotObject.spotwidth
                     # spotcolor = plotObject.spotcolor
                     # print((i-1)%len(self.colorlis))
-                    spotcolor = self.colorlist[i-1]
+                    plotObject.spotcolor=self.colorlist[i-1]
+                    spotcolor = plotObject.spotcolor
                     print(spotcolor)
                     linewidth = plotObject.linewidth
                     # linecolor = plotObject.linecolor
-                    linecolor = self.colorlist[i-1]
+                    plotObject.linecolor = self.colorlist[i-1]
+                    linecolor=plotObject.linecolor
+
                     spotalpha = plotObject.spotalpha
                     orlabel = plotObject.orlabel
                     fitlabel = plotObject.fitlabel+"，参数("+str(plotObject.paranum+1)+")"
