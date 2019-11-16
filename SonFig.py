@@ -307,13 +307,14 @@ class SonFigbar(QWidget):
     def LineColor(self):
         col = QColorDialog.getColor()
         # try:
-        self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].linecolor=col.name()
-        # self.linecolor = col.name()
-        self.plot()
-        try:
-            self.statusBar().showMessage("更新拟合曲线颜色为" + str(self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].linecolor))
-        except Exception as a:
-            print(a)
+        if(col.isValid()and(self.selectfileComboBox.count()!=0)):
+            self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].linecolor=col.name()
+            # self.linecolor = col.name()
+            self.plot()
+            try:
+                self.statusBar().showMessage("更新拟合曲线颜色为" + str(self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].linecolor))
+            except Exception as a:
+                print(a)
 
     def LineWidth(self):
         self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].linewidth = self.LineWidthComboBox.currentIndex() / 10 + 0.1
@@ -333,13 +334,14 @@ class SonFigbar(QWidget):
             print(a)
     def SpotColor(self):
         col = QColorDialog.getColor()
-        self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].spotcolor = col.name()
-        # self.spotcolor = col.name()
-        self.plot()
-        try:
-            self.statusBar().showMessage("更新原始数据颜色为" + str(self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].spotcolor))
-        except Exception as a:
-            print(a)
+        if (col.isValid()and(self.selectfileComboBox.count()!=0)):
+            self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].spotcolor = col.name()
+            # self.spotcolor = col.name()
+            self.plot()
+            try:
+                self.statusBar().showMessage("更新原始数据颜色为" + str(self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].spotcolor))
+            except Exception as a:
+                print(a)
     def SpotAlpha(self):
         self.datalist[self.selectfileComboBox.currentText()].plotinf[self.funtype].spotalpha = self.BarAlphaComboBox.currentIndex()/10+0.1
         print("透明度：")

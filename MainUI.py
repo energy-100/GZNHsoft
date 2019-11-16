@@ -158,7 +158,7 @@ class MainUI(QWidget):
         self.statusBar().showMessage("正在选择文件...")
 
         path="C:/Users/ENERGY/Desktop/工作文件/lhy"
-        # path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
+        path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
         self.statusBar().showMessage("数据加载中...")
         self.progressBar.setVisible(True)
         if(path!=""):
@@ -661,14 +661,14 @@ class MainUI(QWidget):
 
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-    def clearfile(self):
+    def clearfile(self):###添加清空功能
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         self.selectfilename=[]
         # self.tableWidget.setHorizontalHeaderLabels(['文件名称', '双曲线', '指数', '双曲线积分', '指数积分'])
         self.statusBar().showMessage("已移除所有对比文件！")
 
-    def deletefile(self):
+    def deletefile(self):###添加删除功能
         row_select = self.tableWidget.selectedItems()
         print("类型：",type(row_select))
         if len(row_select) == 0:
