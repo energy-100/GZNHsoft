@@ -136,13 +136,18 @@ class SonFigspot(QWidget):
     def TitleLineEdit(self):
         print(self.titleLineEdit.text())
         print(type(self.titleLineEdit.text()))
-        self.figureinf.title= self.titleLineEdit.text()
-        # self.title = self.titleLineEdit.text()
+        # self.figureinf.title= self.titleLineEdit.text()
+        self.figureinf.temptitle = self.titleLineEdit.text()
         self.plot()
         try:
-            self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.title))
+            if(self.figureinf.temptitle==""):
+                self.statusBar().showMessage("图片标题更新为默认标题")
+            else:
+                self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.titletemp))
         except Exception as a:
             print(a)
+
+
     def ChangeselectfileComboBox(self):     #子图选取文件变化
         if(self.selectfileComboBox.count()!=0):
             print("开始")
@@ -209,10 +214,10 @@ class SonFigspot(QWidget):
                                           label=fitlabel)
         self.figure.axes.set_ylabel(self.figureinf.ylabel)
         self.figure.axes.set_xlabel(self.figureinf.xlabel)
-        try:
+        if(self.figureinf.temptitle==""):
             self.figure.axes.set_title(self.figureinf.title, color=self.figureinf.titlecolor)
-        except Exception as a:
-            print(a)
+        else:
+            self.figure.axes.set_title(self.figureinf.temptitle, color=self.figureinf.titlecolor)
         self.figure.axes.legend()
 
     def SetPara(self,datalist):
@@ -355,11 +360,14 @@ class SonFigbar(QWidget):
     def TitleLineEdit(self):
         print(self.titleLineEdit.text())
         print(type(self.titleLineEdit.text()))
-        self.figureinf.title= self.titleLineEdit.text()
-        # self.title = self.titleLineEdit.text()
+        # self.figureinf.title= self.titleLineEdit.text()
+        self.figureinf.temptitle = self.titleLineEdit.text()
         self.plot()
         try:
-            self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.title))
+            if(self.figureinf.temptitle==""):
+                self.statusBar().showMessage("图片标题更新为默认标题")
+            else:
+                self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.titletemp))
         except Exception as a:
             print(a)
     def ChangeselectfileComboBox(self):     #子图选取文件变化
@@ -432,10 +440,10 @@ class SonFigbar(QWidget):
                                           label=fitlabel)
         self.figure.axes.set_ylabel(self.figureinf.ylabel)
         self.figure.axes.set_xlabel(self.figureinf.xlabel)
-        try:
+        if(self.figureinf.temptitle==""):
             self.figure.axes.set_title(self.figureinf.title, color=self.figureinf.titlecolor)
-        except Exception as a:
-            print(a)
+        else:
+            self.figure.axes.set_title(self.figureinf.temptitle, color=self.figureinf.titlecolor)
         self.figure.axes.legend()
 
     def SetPara(self,datalist):

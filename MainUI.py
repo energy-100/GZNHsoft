@@ -65,7 +65,7 @@ class MainUI(QWidget):
 
         self.listwidget3 = QTableWidget(0,0)
         self.listwidget3.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.listwidget3.customContextMenuRequested.connect(lambda:self.generateMenu3)
+        self.listwidget3.customContextMenuRequested.connect(self.generateMenu3)
         # self.listwidget3.customContextMenuRequested.connect(lambda:self.generateMenu3)
         self.listwidget3.setAlternatingRowColors(True)
         self.listwidget3.setHorizontalHeaderLabels(['文件名称', '双曲线参数序号', '指数参数序号', '双曲线积分参数序号', '指数积分参数序号'])
@@ -86,7 +86,7 @@ class MainUI(QWidget):
         # self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.tableWidget.customContextMenuRequested.connect(self.generateMenu4)
         self.tableWidget.setAlternatingRowColors(True)
-        self.tableWidget.setHorizontalHeaderLabels(['文件名称', '双曲线', '指数','双曲线积分', '指数积分'])
+        self.tableWidget.setHorizontalHeaderLabels(['文件名称', '双曲线参数序号', '指数参数序号', '双曲线积分参数序号', '指数积分参数序号'])
         # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -112,6 +112,9 @@ class MainUI(QWidget):
         self.clearfileButton = QPushButton("清空对比文件", self)
         self.clearfileButton.clicked.connect(lambda:self.clearfile())
         self.grid2.addWidget(self.clearfileButton, 9, 7, 1, 2)
+
+        self.deleteselectfileButton.blockSignals(True)
+        self.clearfileButton.blockSignals(True)
 
         self.singleComboBox = QComboBox()
         self.singleComboBox.addItems(
@@ -158,7 +161,7 @@ class MainUI(QWidget):
         self.statusBar().showMessage("正在选择文件...")
 
         path="C:/Users/ENERGY/Desktop/工作文件/lhy"
-        path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
+        # path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
         self.statusBar().showMessage("数据加载中...")
         self.progressBar.setVisible(True)
         if(path!=""):
@@ -257,8 +260,35 @@ class MainUI(QWidget):
 
         find = self.tableWidget.findItems(filename, QtCore.Qt.MatchExactly)
         if (self.singleplot == 1):
+            # self.selectfilename.clear()
+            # self.selectfilename.append(item)
+            # for box in self.selectfileComboBox:
+            #     self.selectfileComboBox.clear()
+            #     self.selectfileComboBox.addItem(item)
             self.selectfilename.clear()
             self.selectfilename.append(item)
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
+            if item not in self.selectfilename:
+                self.selectfilename.append(item)
+
+            if (not find):
+                # self.selectfileComboBox.addItem(item)
+                self.tableWidget.insertRow(self.tableWidget.rowCount())
+                print(self.tableWidget.rowCount())
+                row=self.datalist.get(item).select()
+                try:
+                    for i in range(len(row)):
+                        self.tableWidget.setItem(self.tableWidget.rowCount()-1,i,QTableWidgetItem(row[i]))
+                        if(str.isdigit(row[i])):
+                            if(int(row[i])!=1):
+                                self.tableWidget.item(self.tableWidget.rowCount()-1, i).setBackground(QBrush(QColor(240, 125, 80)))
+                except Exception as a:
+                    print("20196:")
+                    print(a)
+
+
+
         if(self.singleplot==0):
             if item not in self.selectfilename:
                 self.selectfilename.append(item)
@@ -419,6 +449,31 @@ class MainUI(QWidget):
         else:
             # self.selectfileComboBox.clear()
             # self.selectfileComboBox.addItem(filename)
+            if (fittype == "双曲线拟合"):
+                self.tableWidget.setItem(find[0].row(), 1, QTableWidgetItem(str(index + 1)))
+                if (index != 0):
+                    self.tableWidget.item(find[0].row(), 1).setBackground(QBrush(QColor(240, 125, 80)))
+                else:
+                    self.tableWidget.item(find[0].row(), 1).setBackground(QBrush(QColor(255, 255, 255)))
+            if (fittype == "指数拟合"):
+                self.tableWidget.setItem(find[0].row(), 2, QTableWidgetItem(str(index + 1)))
+                if (index != 0):
+                    self.tableWidget.item(find[0].row(), 2).setBackground(QBrush(QColor(240, 125, 80)))
+                else:
+                    self.tableWidget.item(find[0].row(), 2).setBackground(QBrush(QColor(255, 255, 255)))
+            if (fittype == "双曲线积分形式拟合"):
+                self.tableWidget.setItem(find[0].row(), 3, QTableWidgetItem(str(index + 1)))
+                if (index != 0):
+                    self.tableWidget.item(find[0].row(), 3).setBackground(QBrush(QColor(240, 125, 80)))
+                else:
+                    self.tableWidget.item(find[0].row(), 3).setBackground(QBrush(QColor(255, 255, 255)))
+            if (fittype == "指数积分形式拟合"):
+                self.tableWidget.setItem(find[0].row(), 4, QTableWidgetItem(str(index + 1)))
+                if (index != 0):
+                    self.tableWidget.item(find[0].row(), 4).setBackground(QBrush(QColor(240, 125, 80)))
+                else:
+                    self.tableWidget.item(find[0].row(), 4).setBackground(QBrush(QColor(255, 255, 255)))
+
 
             self.datalist[filename].calculatefit(fittype)
             self.plot(fittype)
@@ -453,7 +508,7 @@ class MainUI(QWidget):
             else:
                 return
 
-    def generateMenu2(self, pos):
+    def generateMenu4(self, pos):
         # rint( pos)
         row_num = -1
         for i in self.listwidget3.selectionModel().selection().indexes():
@@ -498,7 +553,7 @@ class MainUI(QWidget):
             if action == item1:
                 clipboard = QApplication.clipboard()
                 clipboard.setText(self.listwidget3.currentItem().text())
-                self.statusBar().showMessage('已复制："'+currtext+'" ('+filename+"文件-"+fittype+"-第"+rowlabel+"组参数-"+collabel+")")
+                self.statusBar().showMessage('已复制："'+currtext+'" （'+filename+"文件-"+fittype+"-第"+rowlabel+"组参数-"+collabel+"）")
             elif action == item2:
                 clipboard = QApplication.clipboard()
                 text=""
@@ -506,7 +561,7 @@ class MainUI(QWidget):
                 for j in range(self.listwidget3.columnCount()):
                     text+=self.listwidget3.item(ind,j).text()+","
                 clipboard.setText(text)
-                self.statusBar().showMessage('已复制:"'+text+'" ('+filename+"文件-第"+rowlabel+"组参数)")
+                self.statusBar().showMessage('已复制:"'+text+'" （'+filename+"文件-第"+rowlabel+"组参数）")
 
             elif action == item3:
                 clipboard = QApplication.clipboard()
@@ -515,7 +570,7 @@ class MainUI(QWidget):
                 for i in range(self.listwidget3.rowCount()):
                     text += self.listwidget3.item(i, ind).text() + ","
                 clipboard.setText(text)
-                self.statusBar().showMessage("已复制:"+text+" (已提取每组参数中的"+collabel+")")
+                self.statusBar().showMessage("已复制:"+text+" （已提取每组参数中的"+collabel+"）")
             else:
                 return
     # def generateMenu4(self, pos):
@@ -546,6 +601,8 @@ class MainUI(QWidget):
 
     def ChangedsingleComboBox(self):
         if(self.singleComboBox.currentText()=="单文件分析"):
+            self.deleteselectfileButton.blockSignals(True)
+            self.clearfileButton.blockSignals(True)
             self.singleplot = 1
             self.statusBar().showMessage("正在清空画板")
             i=1
@@ -562,6 +619,8 @@ class MainUI(QWidget):
                 i=i+1
             self.statusBar().showMessage("已进入单文件分析模式")
         else:
+            self.deleteselectfileButton.blockSignals(False)
+            self.clearfileButton.blockSignals(False)
             self.singleplot = 0
             self.selectfilename.clear()
             self.statusBar().showMessage("正在清空画板")
@@ -665,7 +724,9 @@ class MainUI(QWidget):
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         self.selectfilename=[]
-        # self.tableWidget.setHorizontalHeaderLabels(['文件名称', '双曲线', '指数', '双曲线积分', '指数积分'])
+
+        for box in self.selectfileComboBox:
+            self.selectfileComboBox[box].clear()
         self.statusBar().showMessage("已移除所有对比文件！")
 
     def deletefile(self):###添加删除功能
@@ -678,6 +739,11 @@ class MainUI(QWidget):
         # for i in range(int(len(row_select)/self.tableWidget.columnCount()+1)):
         #     print("row:",row_select[i*5].row)
         filename=row_select[0].text()
+
+        for box in self.selectfileComboBox:
+            index=self.selectfileComboBox[box].findText(filename)
+            if(index!=-1):
+                self.selectfileComboBox[box].removeItem(index)
         self.tableWidget.removeRow(row_select[0].row())
         self.selectfilename.remove(filename)
         self.plotall()
@@ -796,7 +862,10 @@ class MainUI(QWidget):
         self.statusBar().showMessage("正在加载坐标轴标题...")
         self.figure[funtype].axes.set_ylabel(self.figureinf[funtype].ylabel)
         self.figure[funtype].axes.set_xlabel(self.figureinf[funtype].xlabel)
-        self.figure[funtype].axes.set_title(self.figureinf[funtype].title)
+        if(self.figureinf[funtype].temptitle==""):
+            self.figure[funtype].axes.set_title(self.figureinf[funtype].title)
+        else:
+            self.figure[funtype].axes.set_title(self.figureinf[funtype].temptitle)
         self.figure[funtype].axes.legend()
 
         self.figureson[funtype].figure.axes.set_ylabel(self.figureinf[funtype].ylabel)

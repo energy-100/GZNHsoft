@@ -35,6 +35,7 @@ class DataClass():
         for i in range(1,len(ret)):
             if(ret[i]!="-"):
                 ret[i]=str(int(ret[i])+1)
+        print(ret)
         return ret
 
     def Setordata(self,x,y,dt):

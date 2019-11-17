@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import *
 class FigureClass():
     def __init__(self,title, parent=None):
         self.title=title
+        self.temptitle=""
         self.titlecolor="black"
         self.xaxis=""
         self.yaxis=""
