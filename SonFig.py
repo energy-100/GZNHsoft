@@ -83,7 +83,7 @@ class SonFigspot(QWidget):
 
         # 添加标题输入框
         self.titleLineEdit = QLineEdit(self)
-        self.titleLineEdit.setPlaceholderText("函数公式")
+        self.titleLineEdit.setPlaceholderText("默认显示函数公式")
         self.titleLineEdit.returnPressed.connect(lambda: self.TitleLineEdit())
         self.grid.addWidget(self.titleLineEdit, 1, 10, 1, 1)
         self.setLayout(self.grid)
@@ -141,9 +141,9 @@ class SonFigspot(QWidget):
         self.plot()
         try:
             if(self.figureinf.temptitle==""):
-                self.statusBar().showMessage("图片标题更新为默认标题")
+                self.statusBar().showMessage(self.funtype+"的图片标题更新为默认标题")
             else:
-                self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.titletemp))
+                self.statusBar().showMessage(self.funtype+"的图片标题更新为：" + str(self.figureinf.temptitle))
         except Exception as a:
             print(a)
 
@@ -304,7 +304,7 @@ class SonFigbar(QWidget):
 
         # 添加标题输入框
         self.titleLineEdit = QLineEdit(self)
-        self.titleLineEdit.setPlaceholderText("函数公式")
+        self.titleLineEdit.setPlaceholderText("默认显示函数公式")
         self.titleLineEdit.returnPressed.connect(lambda: self.TitleLineEdit())
         self.grid.addWidget(self.titleLineEdit, 1, 10, 1, 1)
         self.setLayout(self.grid)
@@ -365,9 +365,9 @@ class SonFigbar(QWidget):
         self.plot()
         try:
             if(self.figureinf.temptitle==""):
-                self.statusBar().showMessage("图片标题更新为默认标题")
+                self.statusBar().showMessage(self.funtype+"的图片标题更新为默认标题")
             else:
-                self.statusBar().showMessage("图片标题更新为：" + str(self.figureinf.titletemp))
+                self.statusBar().showMessage(self.funtype+"的图片标题更新为：" + str(self.figureinf.temptitle))
         except Exception as a:
             print(a)
     def ChangeselectfileComboBox(self):     #子图选取文件变化
