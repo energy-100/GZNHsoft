@@ -224,12 +224,26 @@ class SonFigspot(QWidget):
         self.datalist=datalist
 
     def SaveImage(self):
-        print(self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
-        self.figure.axes.get_figure().savefig(
-            self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
-        self.statusBar.showMessage(
-            "图片成功保存到" + self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
+        filename = ""
+        print(self.selectfileComboBox.itemText(0))
+        if (self.selectfileComboBox.count() == 0):
+            return
+        elif (self.selectfileComboBox.count() == 1):
+            filename = self.selectfileComboBox.itemText(0).split(".")[0] + self.funtype + "(参数" + str(
+                self.datalist[self.selectfileComboBox.itemText(0)].plotinf[self.funtype].paranum) + ").png"
+        else:
+            for i in range(self.selectfileComboBox.count()):
+                filename += self.selectfileComboBox.itemText(i).split(".")[0] + "(参数" + str(
+                    self.datalist[self.selectfileComboBox.itemText(i)].plotinf[self.funtype].paranum) + ")-"
+            filename += self.funtype + "对比图片.png"
 
+        print(self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/")
+        print("图片成功保存到" + self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/" + filename)
+        self.figure.axes.get_figure().savefig(
+            self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/" + filename)
+        self.statusBar().showMessage(
+            "图片成功保存到" + self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/" + filename)
+        print("cdcdc")
 
 
 class SonFigbar(QWidget):
@@ -450,8 +464,20 @@ class SonFigbar(QWidget):
         self.datalist=datalist
 
     def SaveImage(self):
-        print(self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
-        self.figure.axes.get_figure().savefig(
-            self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
-        self.statusBar.showMessage(
-            "图片成功保存到" + self.filepath + "/" + self.filename + "指数拟合图-第" + str(self.paranum) + "组参数" + ".png")
+        filename=""
+        print(self.selectfileComboBox.itemText(0))
+        if(self.selectfileComboBox.count()==0):
+            return
+        elif(self.selectfileComboBox.count()==1):
+            filename=self.selectfileComboBox.itemText(0).split(".")[0]+self.funtype+"(参数"+str(self.datalist[self.selectfileComboBox.itemText(0)].plotinf[self.funtype].paranum)+").png"
+        else:
+            for i in range(self.selectfileComboBox.count()):
+                filename += self.selectfileComboBox.itemText(i).split(".")[0] +"(参数"+str(self.datalist[self.selectfileComboBox.itemText(i)].plotinf[self.funtype].paranum)+")-"
+            filename += self.funtype + "对比图片.png"
+
+
+        print(self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/")
+        print("图片成功保存到" + self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/"+filename)
+        self.figure.axes.get_figure().savefig(self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/" + filename)
+        self.statusBar().showMessage("图片成功保存到" + self.datalist[self.selectfileComboBox.itemText(0)].rootpath + "/"+filename)
+        print("cdcdc")

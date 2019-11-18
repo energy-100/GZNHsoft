@@ -115,6 +115,7 @@ class MainUI(QWidget):
 
         self.deleteselectfileButton.blockSignals(True)
         self.clearfileButton.blockSignals(True)
+        self.saveImageButton.blockSignals(True)
 
         self.singleComboBox = QComboBox()
         self.singleComboBox.addItems(
@@ -160,8 +161,8 @@ class MainUI(QWidget):
     def openfile(self):
         self.statusBar().showMessage("正在选择文件...")
 
-        # path="C:/Users/ENERGY/Desktop/工作文件/lhy"
-        path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
+        path="C:/Users/ENERGY/Desktop/工作文件/lhy"
+        # path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
         self.statusBar().showMessage("数据加载中...")
         self.progressBar.setVisible(True)
         if(path!=""):
@@ -289,13 +290,14 @@ class MainUI(QWidget):
 
 
 
-        if(self.singleplot==0):
+        elif(self.singleplot==0):
             if item not in self.selectfilename:
                 self.selectfilename.append(item)
             if (not find):
                 # self.selectfileComboBox.addItem(item)
                 self.tableWidget.insertRow(self.tableWidget.rowCount())
                 row=self.datalist.get(item).select()
+                print(self.tableWidget.rowCount())
                 try:
                     for i in range(len(row)):
                         self.tableWidget.setItem(self.tableWidget.rowCount()-1,i,QTableWidgetItem(row[i]))
@@ -601,8 +603,11 @@ class MainUI(QWidget):
 
     def ChangedsingleComboBox(self):
         if(self.singleComboBox.currentText()=="单文件分析"):
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
             self.deleteselectfileButton.blockSignals(True)
             self.clearfileButton.blockSignals(True)
+            self.selectfilename.clear()
             self.singleplot = 1
             self.statusBar().showMessage("正在清空画板")
             i=1
@@ -619,6 +624,8 @@ class MainUI(QWidget):
                 i=i+1
             self.statusBar().showMessage("已进入单文件分析模式")
         else:
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
             self.deleteselectfileButton.blockSignals(False)
             self.clearfileButton.blockSignals(False)
             self.singleplot = 0
