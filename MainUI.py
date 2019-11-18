@@ -160,8 +160,8 @@ class MainUI(QWidget):
     def openfile(self):
         self.statusBar().showMessage("正在选择文件...")
 
-        path="C:/Users/ENERGY/Desktop/工作文件/lhy"
-        # path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
+        # path="C:/Users/ENERGY/Desktop/工作文件/lhy"
+        path= QFileDialog.getExistingDirectory(self, "请选择数据文件的根目录")
         self.statusBar().showMessage("数据加载中...")
         self.progressBar.setVisible(True)
         if(path!=""):
