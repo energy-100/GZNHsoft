@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../DataProcess/.idea/DataProcess.iml" filepath="$PROJECT_DIR$/../DataProcess/.idea/DataProcess.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/GZNHsoft.iml" filepath="$PROJECT_DIR$/.idea/GZNHsoft.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SLSPlot/.idea/SLSPlot.iml" filepath="$PROJECT_DIR$/../SLSPlot/.idea/SLSPlot.iml" />
     </modules>
   </component>
 </project>
